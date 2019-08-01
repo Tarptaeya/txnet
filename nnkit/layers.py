@@ -2,23 +2,27 @@ import numpy as np
 from .activations import activ, deriv
 
 class Dense:
-    def __init__(self, n_input, n_output, activation='tanh', lr=0.001):
+    def __init__(self, n_input, n_output, activation='tanh', lr=0.001, bias=True):
         self.n_input = n_input
         self.n_output = n_output
         self.weights = np.random.randn(n_input, n_output)
-        self.bias = np.random.randn(1, n_output)
+        self.bias = None
+        if bias: self.bias = np.random.randn(1, n_output)
         self.activation = activation
         self.lr = lr
 
     def forward(self, x):
-        out = np.dot(x, self.weights) + self.bias
+        out = np.dot(x, self.weights)
+        if self.bias is not None:
+            out += self.bias
         return activ(out, self.activation)
 
     def backward(self, inp, out, err):
         back_err = np.dot(err, self.weights.T)
         grad = err * deriv(out, self.activation)
         self.weights += self.lr * np.dot(inp.T, grad)
-        self.bias += self.lr * np.dot(np.ones((1, grad.shape[0])), grad)
+        if self.bias is not None:
+            self.bias += self.lr * np.dot(np.ones((1, grad.shape[0])), grad)
         return back_err
 
 
