@@ -1,6 +1,13 @@
 # txnet
 Keras inspired pure python neural network library
 
+## Installation
+```
+pip install txnet
+```
+
+## Usage
+
 ```python3
 from txnet.models import Sequential
 from txnet.layers import Dense, ReLU, Sigmoid
