@@ -3,7 +3,7 @@ Keras inspired pure python neural network library
 
 ```python3
 from nnkit.models import Sequential
-from nnkit.layers import Dense
+from nnkit.layers import Dense, ReLU, Sigmoid
 
 import numpy as np
 x = np.array([
@@ -16,10 +16,12 @@ x = np.array([
 y = np.array([[0], [1], [1], [0]])
 
 model = Sequential()
-model.add(Dense(2, 5))
-model.add(Dense(5, 1))
+model.add(Dense(2, 5, 0.01))
+model.add(ReLU())
+model.add(Dense(5, 1, 0.01))
+model.add(Sigmoid())
 
-model.fit(x, y)
+model.fit(x, y, 10000)
 
 print(model.predict(x))
 ```
