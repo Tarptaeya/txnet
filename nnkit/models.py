@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Sequential:
     def __init__(self):
@@ -7,23 +8,28 @@ class Sequential:
     def add(self, layer):
         self.layers.append(layer)
 
-    def forward(self, x):
-        n = len(self.layers)
-        out = [0 for _ in range(n + 1)]
-        out[0] = x
-        for i in range(1, n + 1):
-            out[i] = self.layers[i - 1].forward(out[i - 1])
+    def fit(self, X, y, n_epochs=10):
+        errors = []
+        for epoch in range(n_epochs):
+            N = len(X)
+            for i in range(N):
+                out = X[i].reshape(1, -1)
+                for l in self.layers:
+                    out = l.forward(out)
+
+                t = y[i].reshape(1, -1)
+                derr_dout = -2 * (t - out).reshape(1, -1)
+
+                if epoch % (n_epochs // 20) == 0: errors.append(np.sum((t - out) ** 2))
+
+                for l in self.layers[::-1]:
+                    derr_dout = l.backward(derr_dout)
+
+        plt.plot([i for i in range(len(errors))], errors)
+        plt.show(block=True)
+
+    def predict(self, X):
+        out = X
+        for l in self.layers:
+            out = l.forward(out)
         return out
-
-    def fit(self, x, y, epochs=10):
-        for _ in range(epochs):
-            n = len(self.layers)
-            out = self.forward(x)
-
-            err = y - out[n]
-            for i in range(n - 1, -1, -1):
-                err = self.layers[i].backward(out[i], out[i + 1], err)
-
-    def predict(self, x):
-        return self.forward(x)[-1]
-
